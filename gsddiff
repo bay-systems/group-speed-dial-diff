@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# Group Speed Dial backup file comparision
+#
+# Shows differences between two Group Speed Dial backup files
+#
+# Dhya Pacifica
+# Wed, 05 Apr 2023 00:36:58 -0700
+# dhya -at- bay.systems
+#
+
+process_file () {
+    # function to process a Group Speed Dial backup file
+
+    # create temp file
+    local tf="/tmp/$1.tmp"
+    /usr/bin/cp "$1" "$tf"
+    # split lines at commas
+    sed -i 's/,/\n/g' "$tf"
+    # filter lines we want
+    #sed -E -i '/(^"groups":|^"name":|^\{"id":|^\{"name":|^"url":)/!d' "$tf"
+    sed -E -i '/(^"groups":|^\{"id":|^"url":)/!d' "$tf"
+    # remove leading left curly braces
+    sed -E -i 's/^\{//g' "$tf"
+    # remove quotes
+    sed -E -i 's/"//g' "$tf"
+    # sort
+    /usr/bin/sort -o "$tf" "$tf"
+    echo "$tf"
+}
+
+# make sure 2 args supplied and both are readable, non-zero files
+if [[ $# -eq 2 && -r "$1" && -s "$1" && -r "$2" && -s "$2" ]]; then
+    f1=$(process_file "$1")
+    f2=$(process_file "$2")
+    /usr/bin/diff -ay -t -W $(tput cols) --suppress-common-lines $f1 $f2
+    /usr/bin/rm "$f1"
+    /usr/bin/rm "$f2"
+else
+    printf "Requires two file arguments\nUsage: $0 <file1> <file2>\n"
+    exit 0
+fi
+
