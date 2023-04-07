@@ -18,7 +18,6 @@ process_file () {
     # split lines at commas
     sed -i 's/,/\n/g' "$tf"
     # filter lines we want
-    #sed -E -i '/(^"groups":|^"name":|^\{"id":|^\{"name":|^"url":)/!d' "$tf"
     sed -E -i '/(^"groups":|^\{"id":|^"url":)/!d' "$tf"
     # remove leading left curly braces
     sed -E -i 's/^\{//g' "$tf"
