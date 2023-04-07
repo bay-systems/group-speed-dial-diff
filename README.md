@@ -21,4 +21,7 @@ The script takes two Group Speed Dial backup files as arguments:
 ```bash
 gsddiff <file1> <file2>
 ```
-
+Since it displays the URLs in two columns it is recommended to make your terminal as wide as possible.  If there are a lot of differences between files it is useful to pipe the output to less:
+```bash
+gsddiff <file1> <file2> | less
+```
